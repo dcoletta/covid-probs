@@ -35,12 +35,11 @@ Ps <- 30
 
 # The relative likelihood of at least one infection resulting from no mask compared to at least one infection resulting from masking of customers is Pnm/Pm.
 
-# EXAMPLE
-
-p <- .05  # CONTAGION PROB.  Probability that customer is contagious.
-m <- .10  # MASK EFFECT. The fraction by which the contagious effect of the customer is reduced.
-N <- 20  # NUMBER OF CUSTOMERS
-inf <- .02 # PROB. OF MASKED EMPLOYEES GETTING INFECTED BY CONTAGIOUS CUSTOMER.  A VULNERABILITY MEASURE THAT DOES NOT DEPEND ON WHETHER OR NOT THE CUSTOMER IS MASKED.
+# Default values
+p <- .05  # Probability that customer is contagious.
+m <- .20  # Probability that the customer mask will fail to prevent transmission by a contagious customer having contact with an employee
+N <- 100  # NUMBER OF CUSTOMERS who walk into the store during the time frame being studied
+inf <- .02 # probability that an employee mask will fail to prevent infection from a contagious customer having contact with that employee, irrespective of whether customer is wearing mask
 
 p*inf # The probability a given employee is infected by an unmasked customer
 p*m*inf   # The probability a given employee is infected by a masked customer
@@ -63,18 +62,17 @@ Relative <- function(p, m, N, inf){(1 - (1 - p*inf)^N)/(1 - (1 - m*p*inf)^N)}
 
 Relative2 <- function(p, m, N, inf){(p*inf)/(m*p*inf)}
 
+maxCustomers <- 20
 
-
-Reln <-  rep(0, 5000)
+Reln <-  rep(0, maxCustomers)
 Rp <-Rm <- Rinf <- Relp <- rep(0, Ps)
 
-for(N in c(1:5000)){Reln[N] <- Relative(.05, m, N, inf)}
-N <- 500
+for(N in c(1:maxCustomers)){Reln[N] <- Relative(.05, m, N, inf)}
 for (inf in c(1:Ps)){Rinf[inf] <- Relative(.05, .10, N, inf/100)}
 for (RM in c(1:Ps)){Rm[RM] <- Relative(.05, RM/100, 500, .02)}
 for (RP in c(1:Ps)){Rp[RP] <- Relative(.05, RP/100, 500, .02)}
 # op <- par(mfrow = c(2,2))
-plot(c(1:5000), Reln, xlab = "N = Number of Customers", ylab = "Contagion Ratio, No mask to Mask", main = "Defaults = (p, m, N, inf) = (.05, .10, 500, .02)")  # As a fcn of N.  For very large N the contagion ratio asymptotes at 1.00.
+plot(c(1:maxCustomers), Reln, xlab = "N = Number of Customers", ylab = "Contagion Ratio, No mask to Mask", main = "Defaults = (p, m, N, inf) = (.05, .10, 500, .02)")  # As a fcn of N.  For very large N the contagion ratio asymptotes at 1.00.
 
 plot(rev(c(1:Ps)/100), Rinf, xlab = "p = Infection Probability", ylab = "Contagion Ratio, No mask to Mask", main = "Defaults = (p, m, N, inf) = (.05, .10, 500, .02)")  # As a fcn of inf
 
@@ -83,12 +81,6 @@ plot(rev(c(1:Ps)/100), Rm, xlab = "m = Mask Effectiveness", ylab = "Contagion Ra
 
 plot(rev(c(1:Ps)/100), Rp, xlab = "p = Contagion Probability", ylab = "Contagion Ratio, No mask to Mask", main = "Defaults = (p, m, N, inf) = (.05, .10, 500, .02)")  # As a fcn of p
 
-
-# Default values
-p <- .05  # CONTAGION PROB.
-m <- .10  # MASK EFFECT
-N <- 100  # NUMBER OF CUSTOMERS
-inf <- .02 # PROB. OF MASKED EMPLOYEES GETTING INFECTED BY INFECTED CUSTOMER
 
 # Sequence values
 RN <- seq(1, 501, 20)
@@ -134,5 +126,9 @@ z     <- outer(Rinf, Rp, f)
 persp(Rinf, Rp, z, theta = -30, phi = 25, shade = 0.05, col = "white", expand = 0.5, r = 2, ltheta = 25, ticktype = "detailed") 
 
 
+# Relative risk for mask effectiveness and contagion probabilityz
 
+f     <- function(Rinf, Rp) Relative(Rp, m, N, Rinf)
+z     <- outer(Rinf, Rp, f)
+persp(Rinf, Rp, z, theta = -40, phi = 10, shade = 0.05, col = "white", expand = 0.8, r = 5, ltheta = 25, ticktype = "detailed") 
 
