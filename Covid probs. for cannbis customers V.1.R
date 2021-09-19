@@ -1,4 +1,3 @@
-
 # PARAMETERS INTRODUCED:  pc(i), m, pc[i], pa[i] = m*pc(i), N, inf, p 
 # Use Ps as the variable to control the range of the three prob, m, p, and inf.
 
