@@ -1,0 +1,28 @@
+p <- .05  # CONTAGION PROB.  Probability that customer is contagious.
+m <- .10  # MASK EFFECT. The fraction by which the contagious effect of the customer is reduced.
+N <- 100  # NUMBER OF CUSTOMERS
+inf <- .02 # PROB. OF MASKED EMPLOYEES GETTING INFECTED BY CONTAGIOUS CUSTOMER.  A VULNERABILITY MEASURE THAT DOES NOT DEPEND ON WHETHER OR NOT THE CUSTOMER IS MASKED.
+
+Relative <- function(p, m, N, inf){(1 - (1 - p*inf)^N)/(1 - (1 - m*p*inf)^N)}
+
+N <- 1000
+ Reln <-  rep(0, N)
+ for(Ni in c(1:N)){Reln[Ni] <- Relative(p, m, Ni, inf)}
+ plot(c(1:N), Reln,lwd = .3, xlab = "Number of Customers", ylab = "Ratio of unmasked prob to masked prob of infection")
+ 
+ p <- .02
+ 
+ Reln <-  rep(0, N)
+ for(Ni in c(1:N)){Reln[Ni] <- Relative(p, m, Ni, inf)}
+ points(c(1:N), Reln, lwd = .1)
+ 
+  p <- .15
+ 
+ Reln <-  rep(0, N)
+ for(Ni in c(1:N)){Reln[Ni] <- Relative(p, m, Ni, inf)}
+ points(c(1:N), Reln, lwd = 2)
+ 
+ text(600, 9.3, "p = .02")
+  text(400, 8, "p = .05")
+  text(150, 7.5, "p = .15")
+  text (400, 6.75, "p is the probability the customer is infectious")
